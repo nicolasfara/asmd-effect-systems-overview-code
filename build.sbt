@@ -1,5 +1,3 @@
-import scala.scalanative.build.*
-
 val scala3Version = "3.7.4"
 
 ThisBuild / scalaVersion := scala3Version
@@ -36,32 +34,38 @@ ThisBuild / scalacOptions ++= Seq(
   "-explain",
   "-feature",
   "-language:strictEquality",
-  "-language:implicitConversions"
+  "-language:implicitConversions",
 )
 ThisBuild / coverageEnabled := true
 ThisBuild / semanticdbEnabled := true
 ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 ThisBuild / wartremoverErrors ++= Warts.allBut(Wart.Any, Wart.Recursion)
 ThisBuild / libraryDependencies ++= Seq(
-  "org.scalatest" %%% "scalatest" % "3.2.19" % Test
+  "org.scalatest" %% "scalatest" % "3.2.19" % Test
 )
 
-lazy val root = crossProject(JSPlatform, JVMPlatform, NativePlatform)
-  .crossType(CrossType.Pure)
+lazy val root = project
   .in(file("."))
   .configs()
-  .nativeSettings(
-    nativeConfig ~= {
-      _.withLTO(LTO.default)
-        .withMode(Mode.releaseSize)
-        .withGC(GC.immix)
-    }
-  )
-  .jsSettings(
-    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "2.8.0",
-    scalaJSUseMainModuleInitializer := true,
-    scalaJSLinkerConfig ~= { _.withOptimizer(true) }
-  )
   .settings(
-    name := "Template-for-Scala-Multiplatform-Projects",
+    name := "asmd-effect-systems-overview-code",
   )
+
+lazy val intro = project
+  .in(file("intro"))
+  .settings(
+    name := "intro",
+  )
+  .dependsOn(root)
+
+lazy val mtl = project
+  .in(file("mtl"))
+  .settings(
+    name := "mtl",
+    libraryDependencies ++= Seq(
+      "org.typelevel" %% "cats-core" % "2.13.0",
+      "org.typelevel" %% "cats-effect" % "3.7.0",
+      "org.typelevel" %% "cats-mtl" % "1.4.0",
+    )
+  )
+  .dependsOn(root)
