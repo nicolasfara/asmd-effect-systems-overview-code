@@ -13,4 +13,6 @@ project/**/metals.sbt
 .idea
 .vscode
 
+.scala-build/
+
 node_modules/
