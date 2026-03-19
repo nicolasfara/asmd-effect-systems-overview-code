@@ -1,0 +1,10 @@
+package io.github.nicolasfara.intro
+
+trait Monad[F[_]]:
+  def pure[A](a: A): F[A]
+  def flatMap[A, B](fa: F[A])(f: A => F[B]): F[B]
+
+object Monad:
+  extension [F[_], A](fa: F[A])(using m: Monad[F])
+    def flatMap[B](f: A => F[B]): F[B] = m.flatMap(fa)(f)
+    def map[B](f: A => B): F[B] = m.flatMap(fa)(a => m.pure(f(a)))
