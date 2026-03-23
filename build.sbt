@@ -68,15 +68,3 @@ lazy val mtl = project
     )
   )
   .dependsOn(root)
-
-lazy val tagless = project
-  .in(file("tagless"))
-  .settings(
-    name := "tagless",
-    libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-core" % "2.13.0",
-      "org.typelevel" %% "cats-effect" % "3.7.0",
-    ),
-    fork := true,
-  )
-  .dependsOn(root)
