@@ -1,4 +1,4 @@
-package io.github.nicolasfara.intro
+package io.github.nicolasfara.intro.parser
 
 object ParserStacked:
   import Monad.*
