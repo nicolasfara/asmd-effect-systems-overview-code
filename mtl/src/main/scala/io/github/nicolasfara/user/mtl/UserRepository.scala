@@ -14,6 +14,8 @@ trait UserRepository[F[_]]:
 object UserRepository:
   type UserDb = Map[UUID, User]
 
+  def apply[F[_]](using userRepository: UserRepository[F]): UserRepository[F] = userRepository
+
   given inMemoryRepository[F[_]: Monad](using state: Stateful[F, UserDb]): UserRepository[F] with
     def get(id: UUID): F[Option[User]] =
       state.get.map(_.get(id))
