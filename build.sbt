@@ -50,10 +50,10 @@ lazy val root = project
     name := "asmd-effect-systems-overview-code",
   )
 
-lazy val intro = project
-  .in(file("intro"))
+lazy val stack = project
+  .in(file("stack"))
   .settings(
-    name := "intro",
+    name := "stack",
   )
   .dependsOn(root)
 

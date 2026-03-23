@@ -11,7 +11,7 @@ object ParserStacked:
   type Parser[A] = OptionT[[V] =>> State[String, V], A]
 
   extension [A](parser: Parser[A])
-    def parse(input: String): (Option[A], String) = parser.runOptionT.runStateT(input)
+    def parse(input: String): (Option[A], String) = parser.value.runStateT(input)
 
   // Parser combinators
   def fail[A]: Parser[A] = OptionT.fail

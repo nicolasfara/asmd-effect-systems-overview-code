@@ -10,6 +10,6 @@ def failAndIO: OptionT[IO, Unit] = for
 yield ()
 
 @main def runMonadStack(): Unit =
-  failAndIO.runOptionT.unsafeRun() match
+  failAndIO.value.unsafeRun() match
     case Some(_) => println("Unexpected success")
     case None => println("Expected failure")
