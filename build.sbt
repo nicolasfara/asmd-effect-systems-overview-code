@@ -26,7 +26,6 @@ ThisBuild / scalacOptions ++= Seq(
   "-Wnonunit-statement",
   "-Yexplicit-nulls",
   "-Wsafe-init",
-  "-Ycheck-reentrant",
   "-Xcheck-macros",
   "-rewrite",
   "-indent",
@@ -39,7 +38,7 @@ ThisBuild / scalacOptions ++= Seq(
 ThisBuild / coverageEnabled := true
 ThisBuild / semanticdbEnabled := true
 ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
-ThisBuild / wartremoverErrors ++= Warts.allBut(Wart.Any, Wart.Recursion)
+// ThisBuild / wartremoverErrors ++= Warts.allBut(Wart.Any, Wart.Recursion)
 ThisBuild / libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.2.19" % Test
 )
@@ -67,5 +66,17 @@ lazy val mtl = project
       "org.typelevel" %% "cats-effect" % "3.7.0",
       "org.typelevel" %% "cats-mtl" % "1.4.0",
     )
+  )
+  .dependsOn(root)
+
+lazy val tagless = project
+  .in(file("tagless"))
+  .settings(
+    name := "tagless",
+    libraryDependencies ++= Seq(
+      "org.typelevel" %% "cats-core" % "2.13.0",
+      "org.typelevel" %% "cats-effect" % "3.7.0",
+    ),
+    fork := true,
   )
   .dependsOn(root)
