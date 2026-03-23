@@ -3,6 +3,7 @@ package io.github.nicolasfara.intro.parser
 final case class Parser[A](parse: String => Option[(A, String)])
 
 object Parser:
+  import io.github.nicolasfara.intro.Monad
   import Monad.*
 
   given Monad[Parser] with

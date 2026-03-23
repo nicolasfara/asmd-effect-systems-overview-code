@@ -1,12 +1,17 @@
 package io.github.nicolasfara.intro.parser
 
-object ParserStacked:
-  import Monad.*
-  import Identity.given
-  import MonadTransformer.*
-  import OptionT.given
-  import StateT.given
+import io.github.nicolasfara.intro.Monad
+import io.github.nicolasfara.intro.Monad.*
+import io.github.nicolasfara.intro.Identity
+import io.github.nicolasfara.intro.Identity.given
+import io.github.nicolasfara.intro.MonadTransformer.*
+import io.github.nicolasfara.intro.OptionT
+import io.github.nicolasfara.intro.OptionT.given
+import io.github.nicolasfara.intro.StateT
+import io.github.nicolasfara.intro.StateT.given
 
+
+object ParserStacked:
   type State[S, A] = StateT[Identity, S, A]
   type Parser[A] = OptionT[[V] =>> State[String, V], A]
 
