@@ -6,6 +6,7 @@ import cats.effect.IO
 import cats.data.EitherT
 import cats.data.StateT
 import cats.effect.IOApp
+import cats.data.State
 
 trait UserStore[F[_]]:
   def getUser(id: String): F[Option[User]]
@@ -14,13 +15,13 @@ trait UserStore[F[_]]:
 object UserStore:
   def apply[F[_]](using store: UserStore[F]): UserStore[F] = store
 
-  type TestUserStore[A] = StateT[[V] =>> Either[String, V], Map[String, User], A]
+  type TestUserStore[A] = EitherT[[V] =>> State[Map[String, User], V], String, A]
   given testStore: UserStore[TestUserStore] with
-    def getUser(id: String): TestUserStore[Option[User]] = StateT.inspect: state =>
-      state.get(id)
+    def getUser(id: String): TestUserStore[Option[User]] =
+      EitherT.liftF(State.inspect(_.get(id)))
     
-    def saveUser(user: User): TestUserStore[Unit] = StateT.modify: state =>
-      state.updated(user.id, user)
+    def saveUser(user: User): TestUserStore[Unit] =
+      EitherT.liftF(State.modify(_.updated(user.id, user)))
 
   type ProductionUserStore[A] = StateT[[V] =>> EitherT[IO, String, V], Map[String, User], A]
   given productionStore: UserStore[ProductionUserStore] with
@@ -33,21 +34,24 @@ object UserStore:
         state => state.updated(user.id, user)
 
 object UserLogic:
-  def renameUser[F[_]](id: String, newName: String)(using store: UserStore[F], raiseError: MonadError[F, String]): F[Unit] =
+  def renameUser[F[_]](id: String, newName: String)(using store: UserStore[F], error: MonadError[F, String]): F[Unit] =
     for
       maybeUser <- store.getUser(id)
       user <- maybeUser match
         case Some(user) => Monad[F].pure(user)
-        case None => MonadError[F, String].raiseError(s"User with id $id not found")
+        case None => error.raiseError(s"User with id $id not found")
       updatedUser = user.copy(name = newName)
       _ <- store.saveUser(updatedUser)
     yield ()
 
   def appTestEnvironment(state: Map[String, User]): Unit =
     import UserStore.testStore
-    renameUser("1", "Bob").run(state) match
-      case Right(newState) => println("User renamed successfully! New state: " + newState)
-      case Left(error) => println(s"Error: $error")
+    val (newState, result) = renameUser("1", "Bob").value.run(state).value
+    result match
+      case Right(_) =>
+        println("User renamed successfully! New state: " + newState)
+      case Left(error) =>
+        println(s"Error: $error. State remains unchanged: " + state)
 
   def appProductionEnvironment(state: Map[String, User]): IO[Unit] =
     import UserStore.productionStore
