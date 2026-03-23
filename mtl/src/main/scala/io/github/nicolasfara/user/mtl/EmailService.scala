@@ -1,4 +1,4 @@
-package io.github.nicolasfara.user
+package io.github.nicolasfara.user.mtl
 
 import cats.Monad
 import cats.data.EitherT

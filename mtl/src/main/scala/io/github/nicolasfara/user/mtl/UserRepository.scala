@@ -1,9 +1,10 @@
-package io.github.nicolasfara.user
+package io.github.nicolasfara.user.mtl
 
 import java.util.UUID
 import cats.Monad
 import cats.mtl.Stateful
 import cats.syntax.all.*
+import io.github.nicolasfara.user.mtl.User
 
 trait UserRepository[F[_]]:
   def get(id: UUID): F[Option[User]]

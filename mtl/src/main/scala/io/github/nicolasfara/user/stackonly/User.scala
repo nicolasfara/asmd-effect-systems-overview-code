@@ -1,4 +1,4 @@
-package io.github.nicolasfara.user
+package io.github.nicolasfara.user.stackonly
 
 import java.util.UUID
 
