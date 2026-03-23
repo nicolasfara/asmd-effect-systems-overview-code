@@ -1,17 +1,17 @@
 package io.github.nicolasfara.intro
 
-final case class StateT[M[_], S, A](runStateT: S => M[(A, S)])
+final case class StateT[M[_], S, A](value: S => M[(A, S)])
 
 object StateT:
   import Monad.*
 
-  given [M[_]: Monad, S]: Monad[[A] =>> StateT[M, S, A]] with
-    def pure[A](a: A): StateT[M, S, A] = StateT(s => summon[Monad[M]].pure((a, s)))
+  given [M[_]: Monad as m, S]: Monad[[A] =>> StateT[M, S, A]] with
+    def pure[A](a: A): StateT[M, S, A] = StateT(s => m.pure((a, s)))
 
     def flatMap[A, B](fa: StateT[M, S, A])(f: A => StateT[M, S, B]): StateT[M, S, B] =
       StateT: s =>
-        fa.runStateT(s).flatMap: (a, nextState) =>
-          f(a).runStateT(nextState)
+        fa.value(s).flatMap: (a, nextState) =>
+          f(a).value(nextState)
 
   given [S]: MonadTransformer[[M[_], A] =>> StateT[M, S, A]] with
     def lift[M[_]: Monad, A](fa: M[A]): StateT[M, S, A] =
@@ -19,16 +19,16 @@ object StateT:
 
   extension [M[_]: Monad, S, A](stateT: StateT[M, S, A])
     def eval(initialState: S): M[A] =
-      stateT.runStateT(initialState).map((a, _) => a)
+      stateT.value(initialState).map((a, _) => a)
 
     def exec(initialState: S): M[S] =
-      stateT.runStateT(initialState).map((_, s) => s)
+      stateT.value(initialState).map((_, s) => s)
 
-  def get[M[_]: Monad, S]: StateT[M, S, S] =
-    StateT(s => summon[Monad[M]].pure((s, s)))
+  def get[M[_]: Monad as m, S]: StateT[M, S, S] =
+    StateT(s => m.pure((s, s)))
 
-  def set[M[_]: Monad, S](newState: S): StateT[M, S, Unit] =
-    StateT(_ => summon[Monad[M]].pure(((), newState)))
+  def set[M[_]: Monad as m, S](newState: S): StateT[M, S, Unit] =
+    StateT(_ => m.pure(((), newState)))
 
   def modify[M[_]: Monad, S](f: S => S): StateT[M, S, Unit] =
     for
