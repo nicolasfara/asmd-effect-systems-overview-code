@@ -1,4 +1,4 @@
-val scala3Version = "3.7.4"
+val scala3Version = "3.8.1"
 
 ThisBuild / scalaVersion := scala3Version
 ThisBuild / organization := "io.github.nicolasfara"
@@ -73,6 +73,10 @@ lazy val direct = project
   .in(file("direct"))
   .settings(
     name := "direct",
-    libraryDependencies ++= Seq()
+    libraryDependencies ++= Seq(),
+    scalacOptions ++= Seq(
+      "-language:experimental.captureChecking",
+    //   "-language:experimental.saferExceptions"
+    )
   )
   .dependsOn(root)

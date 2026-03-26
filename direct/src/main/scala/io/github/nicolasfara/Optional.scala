@@ -23,7 +23,7 @@ object optional:
     else x * 2
   println(result) // Output: None
 
-@main def questionMarkOptionalExample(): Unit =
+@main def questionMarkOptionalExample() =
   import optional.*
 
   def directStyleApi(x: Int)(using CanMiss[String]): Int =
