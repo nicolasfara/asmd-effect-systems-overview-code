@@ -68,3 +68,11 @@ lazy val mtl = project
     )
   )
   .dependsOn(root)
+
+lazy val direct = project
+  .in(file("direct"))
+  .settings(
+    name := "direct",
+    libraryDependencies ++= Seq()
+  )
+  .dependsOn(root)
